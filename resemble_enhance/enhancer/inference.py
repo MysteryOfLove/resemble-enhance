@@ -6,7 +6,8 @@ import torch
 
 from ..inference import inference
 from .download import download
-from .train import Enhancer, HParams
+from .model import load_enhancer_model
+from .hparams import HParams
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +15,7 @@ logger = logging.getLogger(__name__)
 @cache
 def load_enhancer(run_dir: str | Path | None, device):
     run_dir = download(run_dir)
-    hp = HParams.load(run_dir)
-    enhancer = Enhancer(hp)
-    path = run_dir / "ds" / "G" / "default" / "mp_rank_00_model_states.pt"
-    state_dict = torch.load(path, map_location="cpu")["module"]
-    enhancer.load_state_dict(state_dict)
-    enhancer.eval()
-    enhancer.to(device)
-    return enhancer
+    return load_enhancer_model(run_dir, device)
 
 
 @torch.inference_mode()
