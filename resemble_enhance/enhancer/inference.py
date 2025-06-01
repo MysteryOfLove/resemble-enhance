@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 @cache
-def load_enhancer(run_dir: str | Path | None, device):
-    run_dir = download(run_dir)
+def load_enhancer(run_dir: str | Path | None, device, skip_download: bool = False):
+    if not skip_download:
+        run_dir = download(run_dir)
     return load_enhancer_model(run_dir, device)
 
 
@@ -29,11 +30,11 @@ def denoise(dwav, sr, device, run_dir=None):
 
 
 @torch.inference_mode()
-def enhance(dwav, sr, device, nfe=32, solver="midpoint", lambd=0.5, tau=0.5, run_dir=None):
+def enhance(dwav, sr, device, nfe=32, solver="midpoint", lambd=0.5, tau=0.5, run_dir=None, skip_download=False):
     assert 0 < nfe <= 128, f"nfe must be in (0, 128], got {nfe}"
     assert solver in ("midpoint", "rk4", "euler"), f"solver must be in ('midpoint', 'rk4', 'euler'), got {solver}"
     assert 0 <= lambd <= 1, f"lambd must be in [0, 1], got {lambd}"
     assert 0 <= tau <= 1, f"tau must be in [0, 1], got {tau}"
-    enhancer = load_enhancer(run_dir, device)
+    enhancer = load_enhancer(run_dir, device, skip_download)
     enhancer.configurate_(nfe=nfe, solver=solver, lambd=lambd, tau=tau)
     return inference(model=enhancer, dwav=dwav, sr=sr, device=device)
