@@ -20,8 +20,12 @@ def load_enhancer(run_dir: str | Path | None, device):
 
 @torch.inference_mode()
 def denoise(dwav, sr, device, run_dir=None):
-    enhancer = load_enhancer(run_dir, device)
-    return inference(model=enhancer.denoiser, dwav=dwav, sr=sr, device=device)
+    from ..denoiser.model import load_denoiser_from_enhancer_checkpoint
+    from ..inference import inference
+    
+    # Load denoiser from enhancer checkpoint since they're stored together
+    denoiser = load_denoiser_from_enhancer_checkpoint(run_dir, device)
+    return inference(model=denoiser, dwav=dwav, sr=sr, device=device)
 
 
 @torch.inference_mode()

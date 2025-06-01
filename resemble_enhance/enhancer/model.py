@@ -32,7 +32,11 @@ def load_enhancer_model(run_dir: Path, device: str = "cpu") -> EnhancerInference
         raise FileNotFoundError(f"Model checkpoint not found at {ckpt_path}")
     
     state_dict = torch.load(ckpt_path, map_location="cpu")["module"]
-    model.load_state_dict(state_dict)
+    
+    # Filter out denoiser weights since EnhancerInference doesn't have a denoiser
+    filtered_state_dict = {k: v for k, v in state_dict.items() if not k.startswith('denoiser.')}
+    
+    model.load_state_dict(filtered_state_dict)
     model.eval()
     model.to(device)
     
