@@ -4,7 +4,7 @@ from functools import cache
 import torch
 
 from ..inference import inference
-from .model import load_denoiser_model, create_default_denoiser
+from .safetensors_loader import load_denoiser_model, create_default_denoiser
 from .hparams import HParams
 
 logger = logging.getLogger(__name__)

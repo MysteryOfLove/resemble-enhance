@@ -6,7 +6,7 @@ import torch
 
 from ..inference import inference
 from .download import download
-from .model import load_enhancer_model
+from .safetensors_loader import load_enhancer_model
 from .hparams import HParams
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ def load_enhancer(run_dir: str | Path | None, device):
 
 @torch.inference_mode()
 def denoise(dwav, sr, device, run_dir=None):
-    from ..denoiser.model import load_denoiser_from_enhancer_checkpoint
+    from ..denoiser.safetensors_loader import load_denoiser_from_enhancer_checkpoint
     from ..inference import inference
     
     # Load denoiser from enhancer checkpoint since they're stored together
