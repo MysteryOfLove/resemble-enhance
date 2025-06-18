@@ -45,6 +45,7 @@ setup(
     extra_require={
         "train": [
             "deepspeed>=0.12.4",
+            "gradio>=4.8.0",
         ],
     },
     url="https://github.com/resemble-ai/resemble-enhance",
