@@ -4,8 +4,7 @@ from functools import cache
 import torch
 
 from ..inference import inference
-from .safetensors_loader import load_denoiser_model, create_default_denoiser
-from .hparams import HParams
+from .train import Denoiser, HParams
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +12,15 @@ logger = logging.getLogger(__name__)
 @cache
 def load_denoiser(run_dir, device):
     if run_dir is None:
-        return create_default_denoiser(device)
-    return load_denoiser_model(run_dir, device)
+        return Denoiser(HParams())
+    hp = HParams.load(run_dir)
+    denoiser = Denoiser(hp)
+    path = run_dir / "ds" / "G" / "default" / "mp_rank_00_model_states.pt"
+    state_dict = torch.load(path, map_location="cpu")["module"]
+    denoiser.load_state_dict(state_dict)
+    denoiser.eval()
+    denoiser.to(device)
+    return denoiser
 
 
 @torch.inference_mode()

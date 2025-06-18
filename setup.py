@@ -44,7 +44,6 @@ setup(
     install_requires=requirements,
     extra_require={
         "train": [
-            "deepspeed>=0.12.4",
             "gradio>=4.8.0",
         ],
     },
